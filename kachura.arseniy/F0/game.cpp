@@ -64,19 +64,19 @@ void Game::stop()
 
 bool Game::applyDirection(const std::string & direction, int & dx, int & dy) const
 {
-  if (direction == "up") {
+  if (direction == "up" || direction == "u") {
     dx = 0;
     dy = -1;
     return true;
-  } else if (direction == "down") {
+  } else if (direction == "down" || direction == "d") {
     dx = 0;
     dy = 1;
     return true;
-  } else if (direction == "left") {
+  } else if (direction == "left" || direction == "l") {
     dx = -1;
     dy = 0;
     return true;
-  } else if (direction == "right") {
+  } else if (direction == "right" || direction == "r") {
     dx = 1;
     dy = 0;
     return true;
@@ -108,9 +108,6 @@ bool Game::move(const std::string & direction, std::string & message)
 
 bool Game::dig(const std::string & direction, std::string & message)
 {
-  if (!applyDirection(direction, *(new int(0)), *(new int(0)))) {
-    return false;
-  }
   int dx = 0;
   int dy = 0;
   applyDirection(direction, dx, dy);
@@ -147,10 +144,6 @@ bool Game::flag(const std::string & direction, std::string & message)
 {
   int dx = 0;
   int dy = 0;
-  if (!applyDirection(direction, dx, dy)) {
-    message = "Invalid direction.";
-    return false;
-  }
   Map & map = MapStorage::getMap(mapName_);
   int tx = cursorX_ + dx;
   int ty = cursorY_ + dy;
