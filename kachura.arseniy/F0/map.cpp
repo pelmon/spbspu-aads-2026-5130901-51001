@@ -348,4 +348,25 @@ bool Map::findSafeCell(int & outX, int & outY, double & outProb) const
   return false;
 }
 
+bool Map::findDefiniteMine(int & outX, int & outY) const
+{
+  for (int y = 0; y < data_.height; ++y) {
+    for (int x = 0; x < data_.width; ++x) {
+      int gx = data_.originX + x;
+      int gy = data_.originY + y;
+      const Cell_t & cell = cellAt(gx, gy);
+      if (cell.state == CellState::Opened || cell.state == CellState::Flag) {
+        continue;
+      }
+      double prob = mineProbability(gx, gy);
+      if (prob == 1.0) {
+        outX = gx;
+        outY = gy;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }

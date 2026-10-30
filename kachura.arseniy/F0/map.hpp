@@ -29,6 +29,7 @@ public:
 
   double mineProbability(int x, int y) const;
   bool findSafeCell(int & outX, int & outY, double & outProb) const;
+  bool findDefiniteMine(int & outX, int & outY) const;
 
 private:
   MapData_t data_;

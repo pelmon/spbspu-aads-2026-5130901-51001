@@ -10,28 +10,46 @@ void printHint()
   Game & game = Game::instance();
   if (!game.isActive()) {
     std::cout
-      << "Commands: gen-map, map-view, start" << std::endl; // не забыть дописать!!!!
+      << "Commands: gen-map, view-map, start
+      Game: move, dig, flag, save, load
+      Enter command to check it's arguments." << std::endl;
     return;
   }
+  Map & map = MapStorage::getMap(game.getMapName());
+  const MapData_t & data = map.getData();
+
   int sx = 0;
   int sy = 0;
   double prob = 0.0;
-  Map & map = MapStorage::getMap(game.getMapName());
-  if (!map.findSafeCell(sx, sy, prob)) {
-    std::cout << "Hint: good luck" << std::endl;
-    return;
-  }
-  const MapData_t & data = map.getData();
-  int relX = sx - data.originX;
-  int relY = sy - data.originY;
-  if (prob == 0.0) {
+
+  if (map.findSafeCell(sx, sy, prob) && prob == 0.0) {
+    int relX = sx;
+    int relY = sy;
     std::cout << "Hint: mine is definitely NOT at ("
               << relX << ", " << relY << ")." << std::endl;
-  } else {
+    return;
+  }
+
+  int mx = 0;
+  int my = 0;
+  if (map.findDefiniteMine(mx, my)) {
+    int relX = mx;
+    int relY = my;
+    std::cout << "Hint: there is definitely a MINE at ("
+              << relX << ", " << relY << ")." << std::endl;
+    return;
+  }
+
+  if (prob >= 0.0 && prob < 2.0) {
+    int relX = sx;
+    int relY = sy;
     std::cout << "Hint: least likely mine at ("
               << relX << ", " << relY
               << "), probability ~ " << prob << '.' << std::endl;
+    return;
   }
+
+  std::cout << "Hint: no safe cells found. Open a new area." << std::endl;
 }
 
 }
