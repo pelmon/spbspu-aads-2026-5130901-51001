@@ -317,4 +317,9 @@ void SaveStorage::remove(const std::string & name)
   }
 }
 
+const std::string & Game::getMapName() const
+{
+  return mapName_;
+}
+
 }

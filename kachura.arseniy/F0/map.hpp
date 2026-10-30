@@ -27,6 +27,9 @@ public:
 
   void printWithCursor(int cursorX, int cursorY) const;
 
+  double mineProbability(int x, int y) const;
+  bool findSafeCell(int & outX, int & outY, double & outProb) const;
+
 private:
   MapData_t data_;
   Vector<Vector<Cell_t > > grid_;

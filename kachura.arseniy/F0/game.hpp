@@ -28,6 +28,8 @@ public:
   int cursorY() const;
   int moves() const;
 
+  const std::string & getMapName() const;
+
 private:
   Game();
 

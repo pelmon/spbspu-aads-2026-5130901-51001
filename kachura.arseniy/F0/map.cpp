@@ -228,4 +228,124 @@ void Map::printWithCursor(int cursorX, int cursorY) const
   }
 }
 
+double Map::mineProbability(int x, int y) const
+{
+  if (!inBounds(x, y)) {
+    return -1.0;
+  }
+  const Cell_t & cell = cellAt(x, y);
+  if (cell.state == CellState::Opened) {
+    return -1.0;
+  }
+  if (cell.state == CellState::Flag) {
+    return -1.0;
+  }
+
+  bool forcedSafe = false;
+  bool forcedMine = false;
+  double bestProb = 0.0;
+  bool hasConstraint = false;
+
+  for (int dy = -1; dy <= 1; ++dy) {
+    for (int dx = -1; dx <= 1; ++dx) {
+      if (dx == 0 && dy == 0) {
+        continue;
+      }
+      int nx = x + dx;
+      int ny = y + dy;
+      if (!inBounds(nx, ny)) {
+        continue;
+      }
+      const Cell_t & neighbour = cellAt(nx, ny);
+      if (neighbour.state != CellState::Opened) {
+        continue;
+      }
+      if (neighbour.hasMine) {
+        continue;
+      }
+      int flags = 0;
+      int hidden = 0;
+      for (int fy = -1; fy <= 1; ++fy) {
+        for (int fx = -1; fx <= 1; ++fx) {
+          if (fx == 0 && fy == 0) {
+            continue;
+          }
+          int cx = nx + fx;
+          int cy = ny + fy;
+          if (!inBounds(cx, cy)) {
+            continue;
+          }
+          const Cell_t & n2 = cellAt(cx, cy);
+          if (n2.state == CellState::Flag) {
+            ++flags;
+          } else if (n2.state != CellState::Opened) {
+            ++hidden;
+          }
+        }
+      }
+      int remaining = neighbour.adjacentMines - flags;
+      if (hidden == 0) {
+        continue;
+      }
+      hasConstraint = true;
+      if (remaining == 0) {
+        forcedSafe = true;
+      } else if (remaining == hidden) {
+        forcedMine = true;
+      } else {
+        double local = static_cast<double>(remaining) / static_cast<double>(hidden);
+        if (local > bestProb) {
+          bestProb = local;
+        }
+      }
+    }
+  }
+
+  if (forcedMine) {
+    return 1.0;
+  }
+  if (forcedSafe) {
+    return 0.0;
+  }
+  if (!hasConstraint) {
+    return -1.0;
+  }
+  return bestProb;
+}
+
+bool Map::findSafeCell(int & outX, int & outY, double & outProb) const
+{
+  double best = 2.0;
+  bool found = false;
+  for (int y = 0; y < data_.height; ++y) {
+    for (int x = 0; x < data_.width; ++x) {
+      int gx = data_.originX + x;
+      int gy = data_.originY + y;
+      const Cell_t & cell = cellAt(gx, gy);
+      if (cell.state == CellState::Opened || cell.state == CellState::Flag) {
+        continue;
+      }
+      double prob = mineProbability(gx, gy);
+      if (prob < 0.0) {
+        continue;
+      }
+      if (prob < best) {
+        best = prob;
+        outX = gx;
+        outY = gy;
+        found = true;
+        if (prob == 0.0) {
+          outProb = 0.0;
+          return true;
+        }
+      }
+    }
+  }
+  if (found) {
+    outProb = best;
+    return true;
+  }
+  return false;
+}
+
 }
