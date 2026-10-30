@@ -30,11 +30,11 @@ void printHint()
     return;
   }
 
-  int mx = 0;
-  int my = 0;
+  sx = 0;
+  sy = 0;
   if (map.findDefiniteMine(mx, my)) {
-    int relX = mx;
-    int relY = my;
+    int relX = sx;
+    int relY = sy;
     std::cout << "Hint: there is definitely a MINE at ("
               << relX << ", " << relY << ")." << std::endl;
     return;
