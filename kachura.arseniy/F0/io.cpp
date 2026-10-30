@@ -4,6 +4,7 @@
 #include "map.hpp"
 #include "game.hpp"
 #include "helper.hpp"
+#include "records.hpp"
 
 namespace swapper {
 
