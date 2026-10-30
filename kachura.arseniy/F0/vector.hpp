@@ -34,6 +34,6 @@ private:
 
 }
 
-#include "vector_impl.h"
+#include "vector_i.hpp"
 
 #endif

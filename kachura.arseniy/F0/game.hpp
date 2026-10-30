@@ -3,9 +3,9 @@
 
 #include <string>
 #include "map.hpp"
-#include "hashtable.hpp"
+#include "hash.hpp"
 
-namespace sap {
+namespace swapper {
 
 class Game
 {

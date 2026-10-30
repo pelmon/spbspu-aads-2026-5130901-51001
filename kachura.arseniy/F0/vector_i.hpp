@@ -1,5 +1,5 @@
-#ifndef VECTOR_I_H
-#define VECTOR_I_H
+#ifndef VECTOR_I_HPP
+#define VECTOR_I_HPP
 
 namespace swapper {
 

@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <functional>
 #include <stdexcept>
-#include "vector.h"
+#include "vector.hpp"
 
 namespace swapper {
 
@@ -45,6 +45,6 @@ private:
 
 }
 
-#include "hashtable_impl.h"
+#include "hash_i.hpp"
 
 #endif

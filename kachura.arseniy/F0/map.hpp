@@ -2,10 +2,11 @@
 #define MAP_HPP
 
 #include <string>
-#include "types.h"
-#include "hashtable.h"
+#include "types.hpp"
+#include "vector.hpp"
+#include "hash.hpp"
 
-namespace sap {
+namespace swapper {
 
 class Map
 {
