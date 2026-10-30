@@ -43,6 +43,18 @@ bool Game::start(const std::string & mapName, std::string & message)
   return true;
 }
 
+void Game::printField() const
+{
+  if (!active_) {
+    return;
+  }
+  if (!MapStorage::hasMap(mapName_)) {
+    return;
+  }
+  const Map & map = MapStorage::getMap(mapName_);
+  map.printWithCursor(cursorX_, cursorY_);
+}
+
 void Game::stop()
 {
   active_ = false;

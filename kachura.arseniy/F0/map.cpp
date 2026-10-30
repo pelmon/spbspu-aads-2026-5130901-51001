@@ -188,4 +188,44 @@ void MapStorage::printMap(const std::string & name)
   }
 }
 
+void Map::printWithCursor(int cursorX, int cursorY) const
+{
+  const MapData_t & data = getData();
+  std::cout << "Map " << data.name
+            << " (" << data.width << "x" << data.height << ")"
+            << " mines: " << data.mines << std::endl;
+  for (int y = 0; y < data.height; ++y) {
+    for (int x = 0; x < data.width; ++x) {
+      int gx = data.originX + x;
+      int gy = data.originY + y;
+      const Cell_t & cell = cellAt(gx, gy);
+      char sym = '?';
+      if (cell.state == CellState::Opened) {
+        if (cell.hasMine) {
+          sym = '*';
+        } else if (cell.adjacentMines == 0) {
+          sym = '.';
+        } else {
+          sym = static_cast<char>('0' + cell.adjacentMines);
+        }
+      } else if (cell.state == CellState::Flag) {
+        sym = 'F';
+      } else if (cell.state == CellState::MineMark) {
+        sym = '*';
+      } else if (cell.state == CellState::EnemyMark) {
+        sym = '!';
+      } else if (cell.state == CellState::RandomMark) {
+        sym = '?';
+      }
+      bool isCursor = (gx == cursorX && gy == cursorY);
+      if (isCursor) {
+        std::cout << '[' << sym << ']';
+      } else {
+        std::cout << ' ' << sym << ' ';
+      }
+    }
+    std::cout << std::endl;
+  }
+}
+
 }

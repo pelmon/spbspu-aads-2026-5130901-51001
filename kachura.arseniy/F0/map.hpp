@@ -25,6 +25,8 @@ public:
   void revealAround(int x, int y);
   bool isCleared() const;
 
+  void printWithCursor(int cursorX, int cursorY) const;
+
 private:
   MapData_t data_;
   Vector<Vector<Cell_t > > grid_;

@@ -108,6 +108,7 @@ void processStart(std::istringstream & in)
   std::string msg;
   if (Game::instance().start(name, msg)) {
     std::cout << "Game started on " << name << std::endl;
+    Game::instance().printField();
   } else {
     std::cout << msg << std::endl;
   }
@@ -125,10 +126,13 @@ void processGameCommand(const std::string & cmd, std::istringstream & in)
   in >> dir;
   if (cmd == "move") {
     game.move(dir, msg);
+    game.printField();
   } else if (cmd == "dig") {
     game.dig(dir, msg);
+    game.printField();
   } else if (cmd == "flag") {
     game.flag(dir, msg);
+    game.printField();
   }
   std::cout << msg << std::endl;
 }
@@ -153,8 +157,12 @@ void processLoad(std::istringstream & in)
     return;
   }
   std::string msg;
-  Game::instance().load(name, msg);
-  std::cout << msg << std::endl;
+    if (Game::instance().load(name, msg)) {
+    std::cout << msg << std::endl;
+    Game::instance().printField();
+  } else {
+    std::cout << msg << std::endl;
+  }
 }
 
 void processRecords(std::istringstream & in)

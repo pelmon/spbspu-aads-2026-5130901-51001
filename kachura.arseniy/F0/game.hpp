@@ -22,6 +22,7 @@ public:
   bool save(const std::string & saveName, std::string & message);
   bool load(const std::string & saveName, std::string & message);
   bool placeMines(std::string & message);
+  void printField() const;
 
   int cursorX() const;
   int cursorY() const;
