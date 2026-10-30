@@ -2,10 +2,11 @@
 #define IO_HPP
 
 #include <string>
+#include "returns.hpp"
 
 namespace swapper
 {
-  int runApp();
+  Result_t runApp();
 }
 
 #endif

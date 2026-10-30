@@ -1,6 +1,8 @@
 #include "io.hpp"
 #include <iostream>
 #include <sstream>
+#include "returns.hpp"
+#include "error_handler.hpp"
 #include "map.hpp"
 #include "game.hpp"
 #include "records.hpp"
@@ -10,7 +12,7 @@ namespace swapper {
 
 namespace {
 
-using CommandHandler_t = void (*)(std::istringstream &);
+using CommandHandler_t = Result_t (*)(std::istringstream &);
 
 Result_t processGenMap(std::istringstream & in)
 {
@@ -143,21 +145,20 @@ Result_t processStart(std::istringstream & in)
   return makeOk("Game started on " + name);
 }
 
-void processMove(std::istringstream & in)
+Result_t processMove(std::istringstream & in)
 {
   Game & game = Game::instance();
   if (!game.isActive()) {
-    std::cout << "No active game. Use start." << std::endl;
-    return;
+    return makeError("No active game. Use start.");
   }
   std::string dir;
   in >> dir;
   std::string msg;
   bool ok = game.move(dir, msg);
-  std::cout << msg << std::endl;
   if (ok) {
     game.printField();
   }
+  return ok ? makeOk(msg) : makeError(msg);
 }
 
 Result_t processDig(std::istringstream & in)
@@ -194,7 +195,7 @@ Result_t processFlag(std::istringstream & in)
   return ok ? makeOk(msg) : makeError(msg);
 }
 
-void processSave(std::istringstream & in)
+Result_t processSave(std::istringstream & in)
 {
   std::string name;
   if (!(in >> name)) {
@@ -205,55 +206,54 @@ void processSave(std::istringstream & in)
   return ok ? makeOk(msg) : makeError(msg);
 }
 
-void processLoad(std::istringstream & in)
+Result_t processLoad(std::istringstream & in)
 {
   std::string name;
   if (!(in >> name)) {
-    std::cout << "Usage: load <name>" << std::endl;
-    return;
+    return makeError("Usage: load <name>");
   }
   std::string msg;
-  if (Game::instance().load(name, msg)) {
-    std::cout << msg << std::endl;
-    Game::instance().printField();
-  } else {
-    std::cout << msg << std::endl;
+  if (!Game::instance().load(name, msg)) {
+    return makeError(msg);
   }
+  Game::instance().printField();
+  return makeOk(msg);
 }
 
-void processRecords(std::istringstream & in)
+Result_t processRecords(std::istringstream & in)
 {
   std::string action;
   in >> action;
   if (action.empty() || action == "view") {
     Records::printRecords();
-  } else if (action == "r") {
+    return makeOk("");
+  }
+  if (action == "r") {
     std::string id;
     in >> id;
     std::string msg;
-    Records::removeRecord(id, msg);
-    std::cout << msg << std::endl;
-  } else {
-    std::cout << "Unknown records action." << std::endl;
+    bool ok = Records::removeRecord(id, msg);
+    return ok ? makeOk(msg) : makeError(msg);
   }
+  return makeError("Unknown records action: " + action);
 }
 
-void processDeleteMap(std::istringstream & in)
+Result_t processDeleteMap(std::istringstream & in)
 {
   std::string name;
   if (!(in >> name)) {
-    std::cout << "Usage: delete-map <name>" << std::endl;
-    return;
+    return makeError("Usage: delete-map <name>");
   }
   std::string msg;
-  MapStorage::deleteMap(name, msg);
-  std::cout << msg << std::endl;
+  bool ok = MapStorage::deleteMap(name, msg);
+  return ok ? makeOk(msg) : makeError(msg);
 }
 
-void processHint(std::istringstream & in)
+Result_t processHint(std::istringstream & in)
 {
   (void)in;
   printHint();
+  return makeOk("");
 }
 
 HashTable<std::string, CommandHandler_t > & commandTable()
@@ -282,7 +282,7 @@ HashTable<std::string, CommandHandler_t > & commandTable()
 
 }
 
-int runApp()
+Result_t runApp()
 {
   std::string line;
   while (std::getline(std::cin, line)) {
@@ -293,13 +293,14 @@ int runApp()
     std::string cmd;
     in >> cmd;
     if (!commandTable().contains(cmd)) {
-      std::cout << "Unknown command: " << cmd << std::endl;
+      ErrorHandler::report(makeError("Unknown command: " + cmd));
       continue;
     }
     CommandHandler_t handler = commandTable().at(cmd);
-    handler(in);
+    Result_t result = handler(in);
+    ErrorHandler::report(result);
   }
-  return 0;
+  return makeOk("");
 }
 
 }
