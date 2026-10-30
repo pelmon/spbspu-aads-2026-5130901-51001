@@ -144,6 +144,7 @@ bool Game::flag(const std::string & direction, std::string & message)
 {
   int dx = 0;
   int dy = 0;
+  applyDirection(direction, dx, dy);
   Map & map = MapStorage::getMap(mapName_);
   int tx = cursorX_ + dx;
   int ty = cursorY_ + dy;
