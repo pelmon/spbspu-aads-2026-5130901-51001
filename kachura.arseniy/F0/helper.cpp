@@ -10,9 +10,7 @@ void printHint()
   Game & game = Game::instance();
   if (!game.isActive()) {
     std::cout
-      << "Commands: gen-map, view-map, start
-      Game: move, dig, flag, save, load
-      Enter command to check it's arguments." << std::endl;
+      << "Commands: gen-map, view-map, start\nGame: move, dig, flag, save, load\nEnter command to check it's arguments." << std::endl;
     return;
   }
   Map & map = MapStorage::getMap(game.getMapName());
@@ -32,7 +30,7 @@ void printHint()
 
   sx = 0;
   sy = 0;
-  if (map.findDefiniteMine(mx, my)) {
+  if (map.findDefiniteMine(sx, sy)) {
     int relX = sx;
     int relY = sy;
     std::cout << "Hint: there is definitely a MINE at ("
